@@ -7,6 +7,7 @@ gem 'mongoid', '2.0.0.beta.15'
 gem 'haml'
 gem 'will_paginate'
 gem 'devise', '1.1.1'
+gem 'hoptoad_notifier'
 
 group :development, :test do
   gem 'rspec-rails', '>= 2.0.0.beta.19'

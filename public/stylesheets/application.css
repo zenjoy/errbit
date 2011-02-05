@@ -1,7 +1,7 @@
 html { 
   margin: 0; padding: 0;
   color: #585858; background-color: #E2E2E2;
-  font-size: 62.8%; font-family: "Lucida Grande","Lucida Sans",Arial,sans-serif;
+  font-size: 62.8%; font-family: Helvetica, "Lucida Grande","Lucida Sans",Arial,sans-serif;
 }
 body { 
   margin: 0; padding: 0;
@@ -195,6 +195,12 @@ a.action  { float: right; font-size: 0.9em;}
   padding: 20px; border-top: 1px solid #C6C6C6;
   background-color: #FFF;
 } 
+
+#content a.button { 
+  float: right;
+  display: block;
+  margin-bottom: 10px;
+}
  
 /* Footer */
 #footer {
@@ -205,11 +211,14 @@ a.action  { float: right; font-size: 0.9em;}
 
 /* Flash Messages */
 #flash-messages li {
-  padding: 13px 45px; margin-bottom:25px; border: 1px solid #C6C6C6;
+  padding: 13px 45px; 
+  margin-bottom:25px; 
+  border: 1px solid #C6C6C6;
   background-color: #F9F9F9;
   line-height: 1em;
 }
-#flash-messages .notice {
+#flash-messages li.notice {
+  padding-left: 20px; 
   background-color: #b5eeff;
   border: 1px solid #6cf;
 }
@@ -291,6 +300,8 @@ form div.buttons input, form div.buttons button {
   padding: 0 20px;
   color: #666;
   background: none;
+  display: inline-block;
+  height: 36px;
   font-size: 14px; font-weight: bold; line-height: 36px; text-decoration: none;
   text-shadow: 1px 1px 0px #FFF;
   -moz-text-shadow: 1px 1px 0px #FFF;

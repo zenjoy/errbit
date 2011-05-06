@@ -6,18 +6,20 @@
       %th Latest
       %th Deploy
       %th Count
+      %th Resolve
   %tbody
     - errs.each do |err|
       %tr{:class => err.resolved? ? 'resolved' : 'unresolved'}
         %td.app
-          = err.app.name
+          = link_to err.app.name, app_path(err.app)
           %span.environment= err.environment
         %td.message
           = link_to err.message, app_err_path(err.app, err)
           %em= err.where
         %td.latest #{time_ago_in_words(last_notice_at err)} ago
         %td.deploy= err.app.last_deploy_at ? err.app.last_deploy_at.to_s(:micro) : 'n/a'
-        %td.count= link_to err.notices.count, app_err_path(err.app, err)
+        %td.count= link_to err.notices_count, app_err_path(err.app, err)
+        %td.resolve= link_to image_tag("thumbs-up.png"), resolve_app_err_path(err.app, err), :title => "Resolve", :method => :put, :confirm => err_confirm, :class => 'resolve' if err.unresolved?
     - if errs.none?
       %tr
         %td{:colspan => (@app ? 5 : 6)}

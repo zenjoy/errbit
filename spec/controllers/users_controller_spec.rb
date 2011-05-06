@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe UsersController do
+  render_views
   
   it_requires_authentication
   it_requires_admin_privileges :for => {
@@ -28,6 +29,11 @@ describe UsersController do
         get :edit, :id => @user.id
         assigns(:user).should == @user
       end
+
+      it "should have per_page option" do
+        get :edit, :id => @user.id
+        response.body.should match(/id="user_per_page"/)
+      end
     end
     
     context "PUT /users/:other_id" do
@@ -53,6 +59,11 @@ describe UsersController do
           put :update, :id => @user.to_param, :user => {:admin => true}
           @user.reload.admin.should be_false
         end
+
+        it "should be able to set per_page option" do
+          put :update, :id => @user.to_param, :user => {:per_page => 555}
+          @user.reload.per_page.should == 555
+        end
       end
       
       context "when the update is unsuccessful" do        
@@ -66,15 +77,16 @@ describe UsersController do
   
   context 'Signed in as an admin' do
     before do
-      sign_in Factory(:admin)
+      @user = Factory(:admin)
+      sign_in @user
     end
 
     context "GET /users" do
       it 'paginates all users' do
-        users = 3.times.inject(WillPaginate::Collection.new(1,30)) {|page,_| page << Factory.build(:user)}
-        User.should_receive(:paginate).and_return(users)
+        @user.update_attribute :per_page, 2
+        users = 3.times { Factory(:user) }
         get :index
-        assigns(:users).should == users
+        assigns(:users).size.should == 2
       end
     end
     
@@ -123,6 +135,11 @@ describe UsersController do
           post :create, @attrs
           response.should be_redirect
           User.find(assigns(:user).to_param).admin.should be_true
+        end
+
+        it "should has auth token" do
+          post :create, @attrs
+          User.last.authentication_token.should_not be_blank
         end
       end
       

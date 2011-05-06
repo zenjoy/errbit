@@ -1,16 +1,31 @@
 class DeploysController < ApplicationController
+
+  protect_from_forgery :except => :create
   
   skip_before_filter :verify_authenticity_token, :only => :create
   skip_before_filter :authenticate_user!, :only => :create
   
   def create
     @app = App.find_by_api_key!(params[:api_key])
-    @deploy = @app.deploys.create!({
-      :username     => params[:deploy][:local_username],
-      :environment  => params[:deploy][:rails_env],
-      :repository   => params[:deploy][:scm_repository],
-      :revision     => params[:deploy][:scm_revision]
-    })
+    if params[:deploy]
+      deploy = {
+        :username     => params[:deploy][:local_username],
+        :environment  => params[:deploy][:rails_env],
+        :repository   => params[:deploy][:scm_repository],
+        :revision     => params[:deploy][:scm_revision],
+        :message      => params[:deploy][:message]
+      }
+    end
+
+    # handle Heroku's HTTP post deployhook format
+    deploy ||= {
+      :username     => params[:user],
+      :environment  => params[:rack_env].try(:downcase) || params[:app],
+      :repository   => "git@heroku.com:#{params[:app]}.git",
+      :revision     => params[:head],
+    }
+
+    @deploy = @app.deploys.create!(deploy)
     render :xml => @deploy
   end
 

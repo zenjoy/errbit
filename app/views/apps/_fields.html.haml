@@ -3,14 +3,22 @@
 %div.required
   = f.label :name
   = f.text_field :name
-  
+
+%div.checkbox
+  = f.check_box :notify_on_errs
+  = f.label :notify_on_errs, 'Notify on errors'
+
 %div.checkbox
   = f.check_box :resolve_errs_on_deploy
   = f.label :resolve_errs_on_deploy, 'Resolve errs on deploy'
-  
+
+%div.checkbox
+  = f.check_box :notify_on_deploys
+  = f.label :notify_on_deploys, 'Notify on deploys'
+
 %fieldset.nested-wrapper
   %legend Watchers
-  - f.fields_for :watchers do |w|
+  = f.fields_for :watchers do |w|
     %div.watcher.nested
       %div.choose
         = w.radio_button :watcher_type, :user
@@ -21,3 +29,34 @@
         = w.select :user_id, User.all.map{|u| [u.name,u.id.to_s]}, :include_blank => '-- Select a User --'
       %div.email{:class => w.object.email.present? ? 'choosen' : nil}
         = w.text_field :email
+
+%fieldset
+  %legend Issue tracker
+  = f.fields_for :issue_tracker do |w|
+    %div.issue_tracker.nested
+      %div.choose
+        = w.radio_button :issue_tracker_type, :lighthouseapp
+        = label_tag :issue_tracker_type_lighthouseapp, 'Lighthouse', :for => label_for_attr(w, 'issue_tracker_type_lighthouseapp')
+        = w.radio_button :issue_tracker_type, :redmine
+        = label_tag :issue_tracker_type_redmine, 'Redmine', :for => label_for_attr(w, 'issue_tracker_type_redmine')
+        = w.radio_button :issue_tracker_type, :pivotal
+        = label_tag :issue_tracker_type_pivotal, 'Pivotal Tracker', :for => label_for_attr(w, 'issue_tracker_type_pivotal')
+      %div.tracker_params.lighthouseapp{:class => lighthouse_tracker?(w.object) ? 'chosen' : nil}
+        = w.label :account, "Account"
+        = w.text_field :account, :placeholder => "abc from abc.lighthouseapp.com"
+        = w.label :api_token, "API token"
+        = w.text_field :api_token, :placeholder => "API Token for your account"
+        = w.label :project_id, "Project ID"
+        = w.text_field :project_id, :placeholder => "123 from abc from abc.lighthouseapp.com/projects/123"
+      %div.tracker_params.redmine{:class => redmine_tracker?(w.object) ? 'chosen' : nil}
+        = w.label :account, "Redmine URL"
+        = w.text_field :account, :placeholder => "like http://www.redmine.org/"
+        = w.label :api_token, "API token"
+        = w.text_field :api_token, :placeholder => "API Token for your account"
+        = w.label :project_id, "Project ID"
+        = w.text_field :project_id
+      %div.tracker_params.pivotal{:class => pivotal_tracker?(w.object) ? 'chosen' : nil}
+        = w.label :project_id, "Project ID"
+        = w.text_field :project_id
+        = w.label :api_token, "API token"
+        = w.text_field :api_token, :placeholder => "API Token for your account"

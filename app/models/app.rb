@@ -10,20 +10,21 @@ class App
   field :notify_on_errs, :type => Boolean, :default => true
   field :notify_on_deploys, :type => Boolean, :default => true
   field :email_at_notices, :type => Array, :default => Errbit::Config.email_at_notices
-
+ 
   # Some legacy apps may have sting as key instead of BSON::ObjectID
   identity :type => String
+  
   # There seems to be a Mongoid bug making it impossible to use String identity with references_many feature:
   # https://github.com/mongoid/mongoid/issues/703
   # Using 32 character string as a workaround.
   before_create do |r|
     r.id = ActiveSupport::SecureRandom.hex
   end
-
+  
   embeds_many :watchers
   embeds_many :deploys
   embeds_one :issue_tracker
-  has_many :errs, :inverse_of => :app, :dependent => :destroy
+  has_many :problems, :inverse_of => :app, :dependent => :destroy
 
   before_validation :generate_api_key, :on => :create
   before_save :normalize_github_url
@@ -38,7 +39,17 @@ class App
     :reject_if => proc { |attrs| attrs[:user_id].blank? && attrs[:email].blank? }
   accepts_nested_attributes_for :issue_tracker, :allow_destroy => true,
     :reject_if => proc { |attrs| !%w(none lighthouseapp redmine pivotal fogbugz mingle).include?(attrs[:issue_tracker_type]) }
-
+ 
+  def find_or_create_err!(attrs)
+    find_err(attrs) || problems.create!.errs.create!(attrs)
+  end
+  
+  def find_err(attrs)
+    mapped_attrs = {}; attrs.each {|key, value| mapped_attrs["errs.#{key}"] = value}
+    problem = problems.where(mapped_attrs).first
+    problem && problem.errs.where(attrs).first
+  end
+ 
   # Mongoid Bug: find(id) on association proxies returns an Enumerator
   def self.find_by_id!(app_id)
     where(:_id => app_id).first || raise(Mongoid::Errors::DocumentNotFound.new(self,app_id))
@@ -51,13 +62,15 @@ class App
   def last_deploy_at
     deploys.last && deploys.last.created_at
   end
-
+  
+  
   # Legacy apps don't have notify_on_errs and notify_on_deploys params
   def notify_on_errs
     !(self[:notify_on_errs] == false)
   end
   alias :notify_on_errs? :notify_on_errs
-
+  
+  
   def notify_on_deploys
     !(self[:notify_on_deploys] == false)
   end

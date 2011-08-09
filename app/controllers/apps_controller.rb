@@ -14,16 +14,17 @@ class AppsController < ApplicationController
       format.html do
         where_clause[:environment] = params[:environment] if(params[:environment].present?)
         if(params[:all_errs])
-          @errs = @app.errs.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
+          @errs = @app.problems.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
           @all_errs = true
         else
-          @errs = @app.errs.unresolved.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
+          @errs = @app.problems.unresolved.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
           @all_errs = false
         end
+        @selected_errs = params[:errs] || []
         @deploys = @app.deploys.order_by(:created_at.desc).limit(5)
       end
       format.atom do
-        @errs = @app.errs.unresolved.ordered
+        @errs = @app.problems.unresolved.ordered
       end
     end
   end

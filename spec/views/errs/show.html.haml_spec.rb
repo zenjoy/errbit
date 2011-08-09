@@ -7,7 +7,7 @@ describe "errs/show.html.erb" do
     assign :err, err
     assign :comment, comment
     assign :app, err.app
-    assign :notices, err.notices.ordered.paginate(:page => 1, :per_page => 1)
+    assign :notices, err.notices.paginate(:page => 1, :per_page => 1)
     assign :notice, err.notices.first
   end
 

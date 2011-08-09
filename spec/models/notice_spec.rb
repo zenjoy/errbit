@@ -64,8 +64,8 @@ describe Notice do
     end
 
     it 'finds the correct err for the notice' do
-      Err.should_receive(:for).with({
-        :app      => @app,
+      App.should_receive(:find_by_api_key!).and_return(@app)
+      @app.should_receive(:find_or_create_err!).with({
         :klass        => 'HoptoadTestingException',
         :component    => 'application',
         :action       => 'verify',
@@ -76,15 +76,15 @@ describe Notice do
       @notice = Notice.from_xml(@xml)
     end
 
-    it 'marks the err as unresolve if it was previously resolved' do
-      Err.should_receive(:for).with({
-        :app      => @app,
+    it 'marks the err as unresolved if it was previously resolved' do
+      App.should_receive(:find_by_api_key!).and_return(@app)
+      @app.should_receive(:find_or_create_err!).with({
         :klass        => 'HoptoadTestingException',
         :component    => 'application',
         :action       => 'verify',
         :environment  => 'development',
         :fingerprint  => 'fingerprintdigest'
-      }).and_return(err = Factory(:err, :resolved => true))
+      }).and_return(err = Factory(:err, :problem => Factory(:problem, :resolved => true)))
       err.should be_resolved
       @notice = Notice.from_xml(@xml)
       @notice.err.should == err

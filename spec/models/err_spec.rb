@@ -165,6 +165,4 @@ describe Err do
       }.should change(@err, :notices_count).from(1).to(0)
     end
   end
-
-
 end

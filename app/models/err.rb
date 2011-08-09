@@ -17,7 +17,7 @@ class Err
 
   belongs_to :problem, :inverse_of => :errs
   
-  delegate :app, :resolved?, :unresolved?, :issue_link, :to => :problem
+  delegate :app, :resolved?, :unresolved?, :issue_link, :last_notice_at, :to => :problem
  
   def where
     where = component.dup

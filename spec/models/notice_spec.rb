@@ -172,7 +172,7 @@ describe Notice do
     before do
       Errbit::Config.per_app_email_at_notices = true
       @app = Factory(:app_with_watcher, :email_at_notices => custom_thresholds)
-      @err = Factory(:err, :app => @app)
+      @err = Factory(:err, :problem => Factory(:problem, :app => @app))
     end
 
     after do

@@ -1,7 +1,7 @@
 module ErrsHelper
 
   def last_notice_at err
-    err.problem.last_notice_at || err.created_at
+    err.last_notice_at || err.created_at
   end
   
   def err_confirm

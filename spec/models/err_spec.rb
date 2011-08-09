@@ -16,35 +16,6 @@ describe Err do
     end
   end
 
-  context '#for' do
-    before do
-      @app = Factory(:app)
-      @conditions = {
-        :app      => @app,
-        :klass        => 'Whoops',
-        :component    => 'Foo',
-        :action       => 'bar',
-        :environment  => 'production'
-      }
-    end
-
-    it 'returns the correct err if one already exists' do
-      existing = Err.create(@conditions)
-      Err.for(@conditions).should == existing
-    end
-
-    it 'assigns the returned err to the given app' do
-      Err.for(@conditions).app.should == @app
-    end
-
-    it 'creates a new err if a matching one does not already exist' do
-      Err.where(@conditions.except(:app)).exists?.should == false
-      lambda {
-        Err.for(@conditions)
-      }.should change(Err,:count).by(1)
-    end
-  end
-
   context '#last_notice_at' do
     it "returns the created_at timestamp of the latest notice" do
       err = Factory(:err)
@@ -78,66 +49,12 @@ describe Err do
     end
   end
 
-  context "#resolved?" do
-    it "should start out as unresolved" do
-      err = Err.new
-      err.should_not be_resolved
-      err.should be_unresolved
-    end
-
-    it "should be able to be resolved" do
-      err = Factory(:err)
-      err.should_not be_resolved
-      err.resolve!
-      err.reload.should be_resolved
-    end
-  end
-
-  context "resolve!" do
-    it "marks the err as resolved" do
-      err = Factory(:err)
-      err.should_not be_resolved
-      err.resolve!
-      err.should be_resolved
-    end
-
-    it "should throw an err if it's not successful" do
-      err = Factory(:err)
-      err.should_not be_resolved
-      err.klass = nil
-      err.should_not be_valid
-      lambda {
-        err.resolve!
-      }.should raise_error(Mongoid::Errors::Validations)
-    end
-  end
-
-  context "Scopes" do
-    context "resolved" do
-      it 'only finds resolved Errs' do
-        resolved = Factory(:err, :resolved => true)
-        unresolved = Factory(:err, :resolved => false)
-        Err.resolved.all.should include(resolved)
-        Err.resolved.all.should_not include(unresolved)
-      end
-    end
-
-    context "unresolved" do
-      it 'only finds unresolved Errs' do
-        resolved = Factory(:err, :resolved => true)
-        unresolved = Factory(:err, :resolved => false)
-        Err.unresolved.all.should_not include(resolved)
-        Err.unresolved.all.should include(unresolved)
-      end
-    end
-  end
-
   context 'being created' do
     context 'when the app has err notifications set to false' do
       it 'should not send an email notification' do
         app = Factory(:app_with_watcher, :notify_on_errs => false)
         Mailer.should_not_receive(:err_notification)
-        Factory(:err, :app => app)
+        Factory(:err, :problem => Factory(:problem, :app => app))
       end
     end
   end
@@ -146,7 +63,7 @@ describe Err do
 
     before do
       @app = Factory(:app)
-      @err = Factory(:err, :app => @app)
+      @err = Factory(:err, :problem => Factory(:problem, :app => @app))
     end
 
     it "#notices_count returns 0 by default" do

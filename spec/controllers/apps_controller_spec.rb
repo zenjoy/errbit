@@ -77,7 +77,7 @@ describe AppsController do
 
       context 'with resolved errors' do
         before(:each) do
-          resolved_err = Factory.create(:err, app: @app, resolved: true)
+          resolved_err = Factory.create(:err, :problem => Factory(:problem, app: @app, resolved: true))
           Factory.create(:notice, err: resolved_err)
         end
 
@@ -100,7 +100,7 @@ describe AppsController do
         before(:each) do
           environments = ['production', 'test', 'development', 'staging']
           20.times do |i|
-            Factory.create(:err, app: @app, environment: environments[i % environments.length])
+            Factory.create :err, problem: Factory(:problem, app: @app), environment: environments[i % environments.length]
           end
         end
 

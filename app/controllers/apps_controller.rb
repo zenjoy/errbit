@@ -4,24 +4,6 @@ class AppsController < InheritedResources::Base
   before_filter :parse_email_at_notices_or_set_default, :only => [:create, :update]
   respond_to :html, :except => [:show]
 
-  def show
-    where_clause = {}
-    respond_to do |format|
-      format.html do
-        where_clause[:environment] = params[:environment] if(params[:environment].present?)
-        if(params[:all_errs])
-          @errs = resource.errs.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
-        else
-          @errs = resource.errs.unresolved.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
-        end
-        @deploys = @app.deploys.order_by(:created_at.desc).limit(5)
-      end
-      format.atom do
-        @errs = resource.errs.unresolved.ordered
-      end
-    end
-  end
-
   def new
     plug_params build_resource
     new!

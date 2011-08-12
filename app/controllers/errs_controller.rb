@@ -85,7 +85,11 @@ class ErrsController < InheritedResources::Base
 
     def collection
       @errs ||= begin
-        collection = end_of_association_chain.ordered
+        collection = if !parent? && !current_user.admin?
+          apply_scopes_if_available(Err.where(:app_id => current_user.apps.map(&:id))) if !parent? && !current_user.admin?
+        else
+          end_of_association_chain
+        end.ordered
         collection = collection.paginate(:page => params[:page], :per_page => current_user.per_page) unless request.format.atom?
         collection
       end

@@ -3,7 +3,7 @@ require 'spec_helper'
 describe ErrsController do
 
   it_requires_authentication :for => {
-    :index => :get, :all => :get, :show => :get, :resolve => :put
+    :index => :get, :show => :get, :resolve => :put
   },
   :params => {:app_id => 'dummyid', :id => 'dummyid'}
 
@@ -66,28 +66,28 @@ describe ErrsController do
 
         context 'environment production' do
           it 'shows errs for just production' do
-            get :index, environment: :production
+            get :index, environment: 'production'
             assigns(:errs).size.should == 6
           end
         end
 
         context 'environment staging' do
           it 'shows errs for just staging' do
-            get :index, environment: :staging
+            get :index, environment: 'staging'
             assigns(:errs).size.should == 5
           end
         end
 
         context 'environment development' do
           it 'shows errs for just development' do
-            get :index, environment: :development
+            get :index, environment: 'development'
             assigns(:errs).size.should == 5
           end
         end
 
         context 'environment test' do
           it 'shows errs for just test' do
-            get :index, environment: :test
+            get :index, environment: 'test'
             assigns(:errs).size.should == 5
           end
         end
@@ -103,34 +103,6 @@ describe ErrsController do
         get :index
         assigns(:errs).should include(watched_unresolved_err)
         assigns(:errs).should_not include(unwatched_err, watched_resolved_err)
-      end
-    end
-  end
-
-  describe "GET /errs/all" do
-    context 'when logged in as an admin' do
-      it "gets a paginated list of all errs" do
-        sign_in Factory(:admin)
-        errs = WillPaginate::Collection.new(1,30)
-        3.times { errs << Factory(:err) }
-        3.times { errs << Factory(:err, :resolved => true)}
-        Err.should_receive(:ordered).and_return(
-          mock('proxy', :paginate => errs)
-        )
-        get :all
-        assigns(:errs).should == errs
-      end
-    end
-
-    context 'when logged in as a user' do
-      it 'gets a paginated list of all errs for the users apps' do
-        sign_in(user = Factory(:user))
-        unwatched_err = Factory(:err)
-        watched_unresolved_err = Factory(:err, :app => Factory(:user_watcher, :user => user).app, :resolved => false)
-        watched_resolved_err = Factory(:err, :app => Factory(:user_watcher, :user => user).app, :resolved => true)
-        get :all
-        assigns(:errs).should include(watched_resolved_err, watched_unresolved_err)
-        assigns(:errs).should_not include(unwatched_err)
       end
     end
   end

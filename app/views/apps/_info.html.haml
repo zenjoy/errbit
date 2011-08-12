@@ -1,7 +1,3 @@
-- content_for :title, @app.name
-- content_for :head do
-  = auto_discovery_link_tag :atom, app_url(@app, User.token_authentication_key => current_user.authentication_token, :format => "atom"), :title => "Errbit notices for #{@app.name} at #{root_url}"
-  = javascript_include_tag 'apps.show'
 - content_for :meta do
   %strong Errs Caught:
   = @app.errs.count
@@ -9,14 +5,6 @@
   = @app.deploys.count
   %strong API Key:
   = @app.api_key
-- content_for :action_bar do
-  - if current_user.admin?
-    = link_to 'edit', edit_app_path(@app), :class => 'button'
-    = link_to 'destroy', app_path(@app), :method => :delete, :confirm => 'Seriously?', :class => 'button'
-    - if @all_errs == true
-      = link_to 'unresolved errs', app_path(@app), :class => 'button'
-    - else
-      = link_to 'all errs', app_path(@app, {all_errs: true}), :class => 'button'
 
 %h3{:id => 'watchers_toggle'}
   Watchers
@@ -58,7 +46,7 @@
   Latest Deploys
   %span{:class => 'click_span'} (show/hide)
 #deploys_div
-  - if @deploys.any?
+  - if @app.recent_deploys.any?
     %table.deploys
       %thead
         %tr
@@ -80,10 +68,4 @@
   - else
     %h3 No deploys
 
-- if @app.errs.count > 0
-  %h3.clear Errs
-  = render 'errs/table', :errs => @errs
-- else
-  %h3.clear No errs have been caught yet, make sure you setup your app
-  = render 'configuration_instructions', :app => @app
 

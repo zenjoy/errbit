@@ -47,6 +47,10 @@ class App
     where(:api_key => key).first || raise(Mongoid::Errors::DocumentNotFound.new(self,key))
   end
 
+  def recent_deploys
+    deploys.order_by(:created_at.desc).limit(5)
+  end
+
   def last_deploy_at
     deploys.last && deploys.last.created_at
   end

@@ -2,7 +2,7 @@ class AppsController < InheritedResources::Base
 
   before_filter :require_admin!, :except => [:index, :show]
   before_filter :parse_email_at_notices_or_set_default, :only => [:create, :update]
-  respond_to :html
+  respond_to :html, :except => [:show]
 
   def show
     where_clause = {}
@@ -11,10 +11,8 @@ class AppsController < InheritedResources::Base
         where_clause[:environment] = params[:environment] if(params[:environment].present?)
         if(params[:all_errs])
           @errs = resource.errs.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
-          @all_errs = true
         else
           @errs = resource.errs.unresolved.where(where_clause).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
-          @all_errs = false
         end
         @deploys = @app.deploys.order_by(:created_at.desc).limit(5)
       end

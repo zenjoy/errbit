@@ -9,13 +9,9 @@ Errbit::Application.routes.draw do
   resources :notices, :only => [:show]
   resources :deploys, :only => [:show]
   resources :users
-  resources :errs,    :only => [:index] do
-    collection do
-      get :all
-    end
-  end
+  resources :errs,    :only => [:index]
 
-  resources :apps do
+  resources :apps, :except => [:show] do
     resources :errs do
       resources :notices
       member do
@@ -29,6 +25,7 @@ Errbit::Application.routes.draw do
 
     resources :deploys, :only => [:index]
   end
+  match "/apps/:id", :to => redirect("/apps/%{id}/errs"), :as => :app
 
   devise_for :users
 

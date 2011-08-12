@@ -1,6 +1,19 @@
-- content_for :title, 'Unresolved Errs'
+- content_for :title, errs_page_title
 - content_for :head do
-  = auto_discovery_link_tag :atom, errs_url(User.token_authentication_key => current_user.authentication_token, :format => "atom"), :title => "Errbit notices at #{root_url}"
+  = errs_atom_link
+  = javascript_include_tag 'apps.show'
 - content_for :action_bar do
-  = link_to 'show resolved', all_errs_path, :class => 'button'
-= render 'table', :errs => @errs
+  - if current_user.admin? && @app
+    = link_to 'edit', edit_app_path(@app), :class => 'button'
+    = link_to 'destroy', app_path(@app), :method => :delete, :confirm => 'Seriously?', :class => 'button'
+  - if show_resolved_errs?
+    = link_to 'unresolved errs', (@app ? app_errs_path(@app, params.except(:all_errs)) : errs_path(params.except(:all_errs))), :class => 'button'
+  - else
+    = link_to 'show resolved', (@app ? app_errs_path(@app, params.merge(:all_errs => true)) : errs_path(params.merge(:all_errs => true))), :class => 'button'
+= render 'apps/info' if @app
+- if @errs.count > 0
+  %h3.clear Errs
+  = render 'errs/table', :errs => @errs
+- elsif @app
+  %h3.clear No errs have been caught yet, make sure you setup your app
+  = render 'configuration_instructions', :app => @app

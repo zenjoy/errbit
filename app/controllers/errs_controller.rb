@@ -1,25 +1,15 @@
-class ErrsController < ApplicationController
+class ErrsController < InheritedResources::Base
 
   before_filter :find_app, :except => [:index, :all]
   before_filter :find_err, :except => [:index, :all]
-
-  def index
-    app_scope = current_user.admin? ? App.all : current_user.apps
-    where_clause = {}
-    where_clause[:environment] = params[:environment] if(params[:environment].present?)
-    respond_to do |format|
-      format.html do
-        @errs = Err.for_apps(app_scope).where(where_clause).unresolved.ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
-      end
-      format.atom do
-        @errs = Err.for_apps(app_scope).where(where_clause).unresolved.ordered
-      end
-    end
+  respond_to :html, :only => [:index]
+  respond_to :atom, :only => [:index]
+  belongs_to :app, :optional => true
+  has_scope :environment do |controller, scope, value|
+    scope.where(:environment => value)
   end
-
-  def all
-    app_scope = current_user.admin? ? App.all : current_user.apps
-    @errs = Err.for_apps(app_scope).ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
+  has_scope(:all_errs, :default => 'false') do |controller, scope, value|
+    value.to_s != 'true' ? scope.unresolved : scope
   end
 
   def show
@@ -88,6 +78,14 @@ class ErrsController < ApplicationController
 
 
   protected
+
+    def begin_of_association_chain
+      current_user unless current_user.admin?
+    end
+
+    def collection
+      @errs ||= end_of_association_chain.ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
+    end
 
     def find_app
       @app = App.find(params[:app_id])

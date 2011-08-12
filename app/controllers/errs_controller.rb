@@ -84,7 +84,11 @@ class ErrsController < InheritedResources::Base
     end
 
     def collection
-      @errs ||= end_of_association_chain.ordered.paginate(:page => params[:page], :per_page => current_user.per_page)
+      @errs ||= begin
+        collection = end_of_association_chain.ordered
+        collection = collection.paginate(:page => params[:page], :per_page => current_user.per_page) unless request.format.atom?
+        collection
+      end
     end
 
     def find_app

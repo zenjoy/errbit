@@ -72,7 +72,9 @@
       %tbody
         - @deploys.each do |deploy|
           %tr
-            %td.when #{deploy.created_at.to_s(:micro)}
+            %td.when
+              %span{'data-tooltip' => deploy.created_at.to_s(:rfc822)}
+                = deploy.created_at.to_s(:micro)
             %td.environment #{deploy.environment}
             %td.who #{deploy.username}
             %td.message #{deploy.message}

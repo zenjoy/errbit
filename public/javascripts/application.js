@@ -21,6 +21,19 @@ $(function(){
     window.location.href = loc.protocol + "//" + loc.host + loc.pathname +
                            "?copy_attributes_from=" + $(this).val();
   });
+
+  $('span[data-tooltip]').each(function() {
+    $(this).qtip({
+      content: $(this).data('tooltip'),
+      style: 'dark',
+      position: {
+        corner: {
+           target: 'topRight',
+           tooltip: 'bottomLeft'
+        }
+      }
+    });
+  });
 });
 
 function activateTabbedPanels() {

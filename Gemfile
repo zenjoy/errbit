@@ -39,6 +39,7 @@ end
 
 gem 'ri_cal'
 gem 'yajl-ruby'
+gem 'tane', '>= 0.0.5', :group => :development
 
 group :development, :test do
   gem 'rspec-rails', '~> 2.6'

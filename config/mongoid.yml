@@ -6,3 +6,7 @@ development:
 
 production:
   uri: <%= ENV['MONGODB_URL'] %>
+
+test:
+  host: localhost
+  database: errbit_test

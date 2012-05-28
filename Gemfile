@@ -2,6 +2,14 @@ source 'http://rubygems.org'
 
 gem 'rails', '3.2.5'
 
+# Allows easy switching between locally developed gems, and gems installed from rubygems.org
+# See README for more info at: https://github.com/ndbroadbent/bundler_local_development
+gem 'bundler_local_development', :group => :development, :require => false
+begin
+  require 'bundler_local_development'
+rescue LoadError
+end
+
 gem 'nokogiri'
 gem 'mongoid', '~> 2.4.10'
 
@@ -39,6 +47,7 @@ end
 
 gem 'ri_cal'
 gem 'yajl-ruby'
+gem 'errbit_cloudfuji', '>= 0.1.1'
 gem 'tane', '>= 0.0.5', :group => :development
 
 group :development, :test do

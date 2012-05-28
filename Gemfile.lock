@@ -35,10 +35,13 @@ GEM
       multi_json (~> 1.0)
     addressable (2.2.8)
     arel (3.0.2)
+    awesome_print (1.0.2)
     bcrypt-ruby (3.0.1)
     bson (1.3.1)
     bson_ext (1.3.1)
     builder (3.0.0)
+    bundler_local_development (0.3.0)
+      bundler
     capybara (1.1.2)
       mime-types (>= 1.16)
       nokogiri (>= 1.3.3)
@@ -48,6 +51,11 @@ GEM
       xpath (~> 0.1.4)
     childprocess (0.3.2)
       ffi (~> 1.0.6)
+    cloudfuji (0.0.46)
+      highline (>= 1.6.1)
+      json (>= 1.4.6)
+      orm_adapter (~> 0.0.3)
+      rest-client (>= 1.6.1)
     columnize (0.3.6)
     crack (0.3.1)
     css_parser (1.2.6)
@@ -66,10 +74,17 @@ GEM
       bcrypt-ruby (~> 3.0)
       orm_adapter (~> 0.0.3)
       warden (~> 1.1)
+    devise_cloudfuji_authenticatable (1.0.5)
+      devise (= 1.5.3)
+      rubycas-client (>= 2.2.1)
     diff-lcs (1.1.3)
     email_spec (1.2.1)
       mail (~> 2.2)
       rspec (~> 2.0)
+    errbit_cloudfuji (0.2.4)
+      cloudfuji (>= 0.0.44)
+      devise_cloudfuji_authenticatable
+      uuid
     erubis (2.7.0)
     eventmachine (0.12.10)
     execjs (1.4.0)
@@ -85,6 +100,7 @@ GEM
       libxml-ruby (~> 2.0)
     has_scope (0.5.1)
     hashie (1.2.0)
+    highline (1.6.12)
     hike (1.2.1)
     hoptoad_notifier (2.4.11)
       activesupport
@@ -112,6 +128,8 @@ GEM
       activesupport (>= 3.0.0)
     linecache (0.46)
       rbx-require-relative (> 0.0.4)
+    macaddr (1.6.1)
+      systemu (~> 2.5.0)
     mail (2.4.4)
       i18n (>= 0.4.0)
       mime-types (~> 1.16)
@@ -128,19 +146,19 @@ GEM
       bundler (>= 1.0.0)
       rails (>= 3.0.0)
       railties (>= 3.0.0)
-    multi_json (1.3.6)
+    multi_json (1.0.4)
     multipart-post (1.1.5)
-    nokogiri (1.5.0)
+    nokogiri (1.5.2)
     oa-core (0.3.2)
     oauth2 (0.5.2)
       faraday (~> 0.7)
       multi_json (~> 1.0)
-    octokit (1.0.7)
+    octokit (1.0.0)
       addressable (~> 2.2)
-      faraday (~> 0.8)
+      faraday (~> 0.7)
       faraday_middleware (~> 0.8)
       hashie (~> 1.2)
-      multi_json (~> 1.3)
+      multi_json (~> 1.0)
     omniauth (1.0.3)
       hashie (~> 1.2)
       rack
@@ -221,6 +239,8 @@ GEM
       linecache (>= 0.3)
     ruby-fogbugz (0.1.1)
       crack
+    rubycas-client (2.3.8)
+      activesupport
     rubyzip (0.9.8)
     selenium-webdriver (2.21.2)
       childprocess (>= 0.2.5)
@@ -232,6 +252,14 @@ GEM
       hike (~> 1.2)
       rack (~> 1.0)
       tilt (~> 1.1, != 1.3.0)
+    systemu (2.5.1)
+    tane (0.0.5)
+      awesome_print
+      erubis
+      highline
+      launchy
+      rake
+      rest-client
     therubyracer (0.10.1)
       libv8 (~> 3.3.10)
     thin (1.3.1)
@@ -252,6 +280,8 @@ GEM
       rack
       raindrops (~> 0.7)
     useragent (0.3.2)
+    uuid (2.3.5)
+      macaddr (~> 1.0)
     warden (1.2.0)
       rack (>= 1.0)
     webmock (1.8.6)
@@ -269,11 +299,13 @@ DEPENDENCIES
   actionmailer_inline_css (~> 1.3.0)
   bson (= 1.3.1)
   bson_ext (= 1.3.1)
+  bundler_local_development
   capybara
   database_cleaner (~> 0.6.0)
   debugger
   devise (~> 1.5.3)
   email_spec
+  errbit_cloudfuji (>= 0.1.1)
   execjs
   fabrication (~> 1.3.0)
   haml
@@ -300,6 +332,7 @@ DEPENDENCIES
   rspec-rails (~> 2.6)
   ruby-debug
   ruby-fogbugz
+  tane (>= 0.0.5)
   therubyracer
   thin
   uglifier (>= 1.0.3)

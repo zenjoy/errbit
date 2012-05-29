@@ -2,11 +2,12 @@
 # ============================================
 
 development:
-  uri: <%= ENV['MONGODB_URL'] %>
-
-production:
-  uri: <%= ENV['MONGODB_URL'] %>
+  host: localhost
+  database: errbit_development
 
 test:
   host: localhost
   database: errbit_test
+
+production:
+  uri: <%= ENV['MONGODB_URL'] %>

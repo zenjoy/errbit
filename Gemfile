@@ -47,7 +47,7 @@ end
 
 gem 'ri_cal'
 gem 'yajl-ruby'
-gem 'errbit_cloudfuji', '>= 0.1.5'
+gem 'errbit_cloudfuji', '>= 0.2.3'
 gem 'tane', '>= 0.0.5', :group => :development
 
 group :development, :test do

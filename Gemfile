@@ -28,7 +28,7 @@ gem 'useragent', '~> 0.3.1'
 gem 'pivotal-tracker'
 gem 'ruby-fogbugz', :require => 'fogbugz'
 
-gem 'octokit', '~> 1.0.0'
+gem 'octokit', '~> 1.0.7'
 
 gem 'inherited_resources'
 gem 'SystemTimer', :platform => :ruby_18
@@ -47,7 +47,7 @@ end
 
 gem 'ri_cal'
 gem 'yajl-ruby'
-gem 'errbit_cloudfuji', '>= 0.2.3'
+gem 'errbit_cloudfuji', '>= 0.2.4'
 gem 'tane', '>= 0.0.5', :group => :development
 
 group :development, :test do

@@ -2,7 +2,7 @@ require 'digest/sha1'
 require 'hoptoad_notifier'
 
 class ErrorReport
-  attr_reader :error_class, :message, :backtrace, :request, :server_environment, :api_key, :notifier, :user_attributes, :current_user
+  attr_reader :error_class, :message, :backtrace, :request, :server_environment, :api_key, :notifier, :user_attributes, :customer_attributes, :current_user
 
   def initialize(xml_or_attributes)
     @attributes = (xml_or_attributes.is_a?(String) ? Hoptoad.parse_xml!(xml_or_attributes) : xml_or_attributes).with_indifferent_access
@@ -38,6 +38,7 @@ class ErrorReport
       :server_environment => server_environment,
       :notifier => notifier,
       :user_attributes => user_attributes,
+      :customer_attributes => customer_attributes,
       :current_user => current_user
     )
 

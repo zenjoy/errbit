@@ -25,12 +25,12 @@ if defined? HipChat
       error_url = last_notice.request['url'] if last_notice && last_notice.request
 
       message = <<-MSG.strip_heredoc
-        <b>#{ERB::Util.html_escape problem.app.name}</b>
+        Boom! An error occurred in <b>#{ERB::Util.html_escape problem.app.name}</b>
         (<a href='#{url}'>view error</a>)
-        <br>&nbsp;-&nbsp;<b>#{problem.message.to_s.truncate(100)} [#{ problem.environment }] [#{ problem.where }]</b>
+        <br>&nbsp;-&nbsp;<b>#{problem.message.to_s.truncate(100)}</b> [#{ problem.environment }] [#{ problem.where }]
       MSG
 
-      message << "triggered at <a href='#{CGI::escapeHTML(error_url)}'>#{CGI::escapeHTML(error_url)}</a>" if error_url
+      message << "<br>&nbsp;&nbsp;&nbsp;&nbsp; => triggered at <a href='#{CGI::escapeHTML(error_url)}'>#{CGI::escapeHTML(error_url)}</a>" if error_url
 
       client = HipChat::Client.new(api_token)
       client[room_id].send('Errbit', message, :color => 'red')

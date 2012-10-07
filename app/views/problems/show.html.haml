@@ -70,6 +70,11 @@
       %h3 User Details
       = render 'notices/user_attributes', :user => @notice.user_attributes
 
+  - if @notice.customer_attributes.present?
+    #user_attributes
+      %h3 Customer Details
+      = render 'notices/user_attributes', :user => @notice.customer_attributes
+
   #environment
     %h3 Environment
     = render 'notices/environment', :notice => @notice

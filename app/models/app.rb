@@ -1,11 +1,13 @@
 class App
   include Mongoid::Document
   include Mongoid::Timestamps
+  include Comparable
 
   field :name, :type => String
   field :api_key
   field :github_repo
   field :bitbucket_repo
+  field :repository_branch
   field :resolve_errs_on_deploy, :type => Boolean, :default => false
   field :notify_all_users, :type => Boolean, :default => false
   field :notify_on_errs, :type => Boolean, :default => true
@@ -97,15 +99,22 @@ class App
 
   # Legacy apps don't have notify_on_errs and notify_on_deploys params
   def notify_on_errs
-    !(self[:notify_on_errs] == false)
+    !(super == false)
   end
   alias :notify_on_errs? :notify_on_errs
 
+  def notifiable?
+    notify_on_errs? && notification_recipients.any?
+  end
+
   def notify_on_deploys
-    !(self[:notify_on_deploys] == false)
+    !(super == false)
   end
   alias :notify_on_deploys? :notify_on_deploys
 
+  def repo_branch
+    self.repository_branch.present? ? self.repository_branch : 'master'
+  end
 
   def github_repo?
     self.github_repo.present?
@@ -116,7 +125,7 @@ class App
   end
 
   def github_url_to_file(file)
-    "#{github_url}/blob/master#{file}"
+    "#{github_url}/blob/#{repo_branch + file}"
   end
 
   def bitbucket_repo?
@@ -128,16 +137,16 @@ class App
   end
 
   def bitbucket_url_to_file(file)
-    "#{bitbucket_url}/src/master#{file}"
+    "#{bitbucket_url}/src/#{repo_branch + file}"
   end
 
 
   def issue_tracker_configured?
-    !!(issue_tracker && issue_tracker.class < IssueTracker && issue_tracker.project_id.present?)
+    !!(issue_tracker.class < IssueTracker && issue_tracker.configured?)
   end
 
   def notification_service_configured?
-    !!(notification_service && notification_service.class < NotificationService && notification_service.api_token.present?)
+    !!(notification_service.class < NotificationService && notification_service.configured?)
   end
 
 
@@ -163,6 +172,25 @@ class App
         end
       end
     end
+  end
+
+  def unresolved_count
+    @unresolved_count ||= problems.unresolved.count
+  end
+
+  def problem_count
+    @problem_count ||= problems.count
+  end
+
+  # Compare by number of unresolved errs, then problem counts.
+  def <=>(other)
+    (other.unresolved_count <=> unresolved_count).nonzero? ||
+    (other.problem_count <=> problem_count).nonzero? ||
+    name <=> other.name
+  end
+
+  def email_at_notices
+    Errbit::Config.per_app_email_at_notices ? super : Errbit::Config.email_at_notices
   end
 
   protected

@@ -190,7 +190,7 @@ heroku run rake db:seed
     * Or clear resolved errors manually:
 
     ```bash
-    heroku rake errbit:db:clear_resolved
+    heroku run rake errbit:db:clear_resolved
     ```
 
   * You may want to enable the deployment hook for heroku :
@@ -280,6 +280,11 @@ GITHUB_ACCESS_SCOPE=repo,public_repo
   * In `config/config.yml`, set `user_has_username` to `true`
   * Follow the instructions at https://github.com/cschiewek/devise_ldap_authenticatable
   to set up the devise_ldap_authenticatable gem.
+  * Ensure to set ```config.ldap_create_user = true``` in ```config/initializers/devise.rb```, this enables creating the users from LDAP, otherwhise login will not work.
+  * Create a new initializer (e.g. ```config/initializers/devise_ldap.rb```) and add the following code to enable ldap authentication in the User-model:
+```ruby
+Errbit::Config.devise_modules << :ldap_authenticatable
+```
 
   * If you are authenticating by `username`, you will need to set the user's email manually
   before authentication. You must add the following lines to `app/models/user.rb`:
@@ -291,12 +296,22 @@ GITHUB_ACCESS_SCOPE=repo,public_repo
   end
 ```
 
+  * Now login with your user from LDAP, this will create a user in the database
+  * Open a rails console and set the admin flag for your user:
+
+```ruby
+user = User.first
+user.admin = true
+user.save!
+```
+
 Upgrading
 ---------
 When upgrading Errbit, please run:
 
 ```bash
 git pull origin master # assuming origin is the github.com/errbit/errbit repo
+bundle install
 rake db:migrate
 ```
 
@@ -363,6 +378,19 @@ card_type = Defect, status = Open, priority = Essential
 * You will also need to provide your username and password for your GitHub account.
   * (We'd really appreciate it if you wanted to help us implement OAuth instead!)
 
+**Bitbucket Issues Integration**
+
+* For 'BITBUCKET REPO' field, the account will either be a username or organization. i.e. **errbit/errbit**
+* You will also need to provide your username and password for your Bitbucket account.
+
+**Gitlab Issues Integration**
+
+* Account is the host of your gitlab installation. i.e. **http://gitlab.example.com**
+* To authenticate, Errbit uses token-based authentication. Get your API Key in your user settings (or create special user for this purpose)
+* You also need to provide project name (shortname) or ID (number) for issues to be created
+* **Currently (as of 3.0), Gitlab has 2000 character limit for issue description.** It is necessary to turn it off at your instance, because Errbit issues body is much longer. Please comment validation line in issue model in models folder https://github.com/gitlabhq/gitlabhq/blob/master/app/models/issue.rb#L10
+
+
 
 What if Errbit has an error?
 ----------------------------
@@ -400,6 +428,10 @@ Solutions known to work are listed below:
     <th>PHP (&gt;= 5.3)</th>
     <td>https://github.com/flippa/errbit-php</td>
   </tr>
+  <tr>
+    <th>Python</th>
+    <td>https://github.com/mkorenkov/errbit.py , https://github.com/pulseenergy/airbrakepy</td>
+  </tr>
 </table>
 
 TODO
@@ -412,9 +444,14 @@ Special Thanks
 --------------
 
 * [Michael Parenteau](http://michaelparenteau.com) - For rocking the Errbit design and providing a great user experience.
-* [Nick Recobra aka oruen](https://github.com/oruen) - Nick is Errbit's first core contributor. He's been working hard at making Errbit more awesome.
+* [Nick Recobra (@oruen)](https://github.com/oruen) - Nick is Errbit's first core contributor. He's been working hard at making Errbit more awesome.
+* [Nathan Broadbent (@ndbroadbent)](https://github.com/ndbroadbent) - Maintaining Errbit and contributing many features
+* [Vasiliy Ermolovich (@nashby)](https://github.com/nashby) - Contributing and helping to resolve issues and pull requests
+* [Marcin Ciunelis (@martinciu)](https://github.com/martinciu) - Helping to improve Errbit's architecture
 * [Relevance](http://thinkrelevance.com) - For giving me Open-source Fridays to work on Errbit and all my awesome co-workers for giving feedback and inspiration.
 * [Thoughtbot](http://thoughtbot.com) - For being great open-source advocates and setting the bar with [Airbrake](http://airbrakeapp.com).
+
+See the [contributors graph](https://github.com/errbit/errbit/graphs/contributors) for further details.
 
 
 Contributing

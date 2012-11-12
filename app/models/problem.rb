@@ -57,12 +57,16 @@ class Problem
     Notice.for_errs(errs).ordered
   end
 
+  def comments_allowed?
+    Errbit::Config.allow_comments_with_issue_tracker || !app.issue_tracker_configured?
+  end
+
   def resolve!
-    self.update_attributes!(:resolved => true, :resolved_at => Time.now, :notices_count => 0)
+    self.update_attributes!(:resolved => true, :resolved_at => Time.now)
   end
 
   def unresolve!
-    self.update_attributes!(:resolved => false)
+    self.update_attributes!(:resolved => false, :resolved_at => nil)
   end
 
   def unresolved?
@@ -153,7 +157,7 @@ class Problem
     update_attributes!(attrs)
   end
 
-  def remove_cached_notice_attribures(notice)
+  def remove_cached_notice_attributes(notice)
     update_attributes!(
       :messages    => attribute_count_descrease(:messages, notice.message),
       :hosts       => attribute_count_descrease(:hosts, notice.host),

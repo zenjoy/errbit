@@ -23,7 +23,7 @@
 
   ## Backtrace ##
   <code>
-  <% for line in notice.backtrace %><%= line['number'] %>:  <%= line['file'].to_s.sub(/^\[PROJECT_ROOT\]/, '') %> -> **<%= line['method'] %>**
+  <% notice.backtrace_lines.each do |line| %><%= line.number %>:  <%= line.file_relative %> -> **<%= line.method %>**
   <% end %>
   </code>
 

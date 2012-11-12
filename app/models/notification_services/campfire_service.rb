@@ -2,16 +2,18 @@ if defined? Campy
   class NotificationServices::CampfireService < NotificationService
     Label = "campfire"
     Fields = [
-        [:subdomain, {
-            :placeholder => "Campfire Subdomain"
-        }],
-        [:api_token, {
-            :placeholder => "API Token"
-        }],
-        [:room_id, {
-            :placeholder => "Room ID",
-            :label       => "Room ID"
-        }],
+      [:subdomain, {
+        :label       => "Subdomain",
+        :placeholder => "subdomain from http://{{subdomain}}.campfirenow.com"
+      }],
+      [:api_token, {
+        :label       => "API Token",
+        :placeholder => "123456789abcdef123456789abcdef"
+      }],
+      [:room_id, {
+        :label       => "Room ID",
+        :placeholder => "123456"
+      }]
     ]
 
     def check_params
@@ -20,12 +22,15 @@ if defined? Campy
       end
     end
 
+    def url
+      "http://#{subdomain}.campfirenow.com/"
+    end
+
     def create_notification(problem)
       # build the campfire client
       campy = Campy::Room.new(:account => subdomain, :token => api_token, :room_id => room_id)
-
       # post the issue to the campfire room
-      campy.speak "[errbit] http://#{Errbit::Config.host}/apps/#{problem.app.id.to_s} #{notification_description problem}"
+      campy.speak "[errbit] #{problem.app.name} #{notification_description problem} - http://#{Errbit::Config.host}/apps/#{problem.app.id.to_s}/problems/#{problem.id.to_s}"
     end
   end
 end

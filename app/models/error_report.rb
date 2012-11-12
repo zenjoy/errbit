@@ -29,11 +29,15 @@ class ErrorReport
     @app ||= App.find_by_api_key!(api_key)
   end
 
+  def backtrace
+    @normalized_backtrace ||= Backtrace.find_or_create(:raw => @backtrace)
+  end
+
   def generate_notice!
     notice = Notice.new(
       :message => message,
       :error_class => error_class,
-      :backtrace => backtrace,
+      :backtrace_id => backtrace.id,
       :request => request,
       :server_environment => server_environment,
       :notifier => notifier,
@@ -56,19 +60,13 @@ class ErrorReport
   private
   def fingerprint_source
     {
-      :backtrace => normalized_backtrace.to_s,
+      :backtrace => backtrace.id,
       :error_class => error_class,
       :component => component,
       :action => action,
       :environment => rails_env,
       :api_key => api_key
     }
-  end
-
-  def normalized_backtrace
-    backtrace[0...3].map do |trace|
-      trace.merge 'method' => trace['method'].gsub(/[0-9_]{10,}+/, "__FRAGMENT__")
-    end
   end
 
 end

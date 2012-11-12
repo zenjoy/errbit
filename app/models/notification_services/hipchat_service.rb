@@ -34,7 +34,7 @@ if defined? HipChat
         <br>&nbsp;-&nbsp;<b>#{problem.message.to_s.truncate(100)}</b> [#{ problem.environment }] [#{ problem.where }]
       MSG
 
-      message << "<br>&nbsp;&nbsp;&nbsp;&nbsp; => triggered at <a href='#{CGI::escapeHTML(error_url)}'>#{CGI::escapeHTML(error_url)}</a>" if error_url
+      message << "<br>&nbsp;&nbsp;&nbsp;&nbsp; => triggered at <a href='#{CGI::escapeHTML(error_url)}'>#{CGI::escapeHTML(error_url)}</a>" if error_url && error_url.is_a?(String)
 
       client = HipChat::Client.new(api_token)
       client[room_id].send('Errbit', message, :color => 'red')

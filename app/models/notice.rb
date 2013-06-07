@@ -12,6 +12,7 @@ class Notice
   field :user_attributes, :type => Hash
   field :customer_attributes, :type => Hash  
   field :current_user, :type => Hash
+  field :framework
   field :error_class
   delegate :lines, :to => :backtrace, :prefix => true
   delegate :app, :problem, :to => :err
@@ -27,7 +28,7 @@ class Notice
     ]
   )
 
-  after_create :increase_counter_cache, :cache_attributes_on_problem, :unresolve_problem
+  after_create :cache_attributes_on_problem, :unresolve_problem
   before_save :sanitize
   before_destroy :decrease_counter_cache, :remove_cached_attributes_from_problem
 
@@ -43,7 +44,11 @@ class Notice
   end
 
   def user_agent_string
-    (user_agent.nil? || user_agent.none?) ? "N/A" : "#{user_agent.browser} #{user_agent.version}"
+    if user_agent.nil? || user_agent.none?
+      "N/A"
+    else
+      "#{user_agent.browser} #{user_agent.version} (#{user_agent.os})"
+    end
   end
 
   def environment_name
@@ -99,19 +104,28 @@ class Notice
     problem.notices_count
   end
 
-  def notifiable?
+  def emailable?
     app.email_at_notices.include?(similar_count)
   end
 
+  def should_email?
+    app.emailable? && emailable?
+  end
+
   def should_notify?
-    app.notifiable? && notifiable?
+    app.notification_service.notify_at_notices.include?(0) || app.notification_service.notify_at_notices.include?(similar_count)
+  end
+
+  ##
+  # TODO: Move on decorator maybe
+  #
+  def project_root
+    if server_environment
+      server_environment['project-root'] || ''
+    end
   end
 
   protected
-
-  def increase_counter_cache
-    problem.inc(:notices_count, 1)
-  end
 
   def decrease_counter_cache
     problem.inc(:notices_count, -1) if err
@@ -126,7 +140,7 @@ class Notice
   end
 
   def cache_attributes_on_problem
-    problem.cache_notice_attributes(self)
+    ProblemUpdaterCache.new(problem, self).update
   end
 
   def sanitize
@@ -134,6 +148,7 @@ class Notice
       send("#{h}=",sanitize_hash(send(h)))
     end
   end
+
 
   def sanitize_hash(h)
     h.recurse do

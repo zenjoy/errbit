@@ -18,6 +18,8 @@ module Hoptoad
           {normalize_key(node['key']) => rekey(node['__content__'])}
         elsif node.has_key?('__content__')
           rekey(node['__content__'])
+        elsif node.has_key?('key')
+          {normalize_key(node['key']) => nil}
         else
           node.inject({}) {|rekeyed, (key, val)| rekeyed.merge(normalize_key(key) => rekey(val))}
         end
@@ -59,11 +61,11 @@ module Hoptoad
 
         :api_key            => notice['api-key'],
         :notifier           => notice['notifier'],
-        :user_attributes    => notice['user-attributes'] || {},
         :customer_attributes => notice['customer-attributes'] || {},        
         :current_user       => notice['current-user'] || {}
+        :user_attributes    => notice['current-user'] || notice['user-attributes'] || {},
+        :framework          => notice['framework']
       }
     end
   end
 end
-

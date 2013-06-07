@@ -29,6 +29,15 @@ describe User do
       user2.should_not be_valid
       user2.errors[:github_login].should include("is already taken")
     end
+
+    it 'allows blank / null github_login' do
+      user1 = Fabricate(:user, :github_login => ' ')
+      user1.should be_valid
+
+      user2 = Fabricate.build(:user, :github_login => ' ')
+      user2.save
+      user2.should be_valid
+    end
   end
 
   context 'Watchers' do
@@ -62,10 +71,12 @@ describe User do
 
   context "First user" do
     it "should be created this admin access via db:seed" do
-      require 'rake'
-      Errbit::Application.load_tasks
-      Rake::Task["db:seed"].execute
-      User.first.admin.should be_true
+      expect {
+        $stdout.stub(:puts => true)
+        require Rails.root.join('db/seeds.rb')
+      }.to change {
+        User.where(:admin => true).count
+      }.from(0).to(1)
     end
   end
 

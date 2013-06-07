@@ -62,7 +62,7 @@ module Hoptoad
         :api_key            => notice['api-key'],
         :notifier           => notice['notifier'],
         :customer_attributes => notice['customer-attributes'] || {},        
-        :current_user       => notice['current-user'] || {}
+        :current_user       => notice['current-user'] || {},
         :user_attributes    => notice['current-user'] || notice['user-attributes'] || {},
         :framework          => notice['framework']
       }

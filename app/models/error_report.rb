@@ -59,7 +59,7 @@ class ErrorReport
       :notifier => notifier,
       :user_attributes => user_attributes,
       :customer_attributes => customer_attributes,
-      :current_user => current_user
+      :current_user => current_user,
       :framework => framework
     )
     error.notices << @notice

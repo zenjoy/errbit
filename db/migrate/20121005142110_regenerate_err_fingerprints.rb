@@ -1,6 +1,7 @@
 class RegenerateErrFingerprints < Mongoid::Migration
   def self.up
     Err.all.each do |err|
+      next if err.notices.first.blank?
       fingerprint_source = {
         :backtrace   => err.notices.first.backtrace_id,
         :error_class => err.error_class,

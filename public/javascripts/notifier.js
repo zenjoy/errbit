@@ -1,4 +1,3 @@
-
 // Airbrake JavaScript Notifier Bundle
 (function(window, document, undefined) {
 // Domain Public by Eric Wendelin http://eriwen.com/ (2008)
@@ -793,7 +792,7 @@ printStackTrace.implementation.prototype = {
             host: 'api.airbrake.io',
             errorDefaults: {},
             guessFunctionName: false,
-            requestType: 'GET', // Can be 'POST' or 'GET'
+            requestType: 'POST', // Can be 'POST' or 'GET'
             outputFormat: 'XML' // Can be 'XML' or 'JSON'
         }
     };
